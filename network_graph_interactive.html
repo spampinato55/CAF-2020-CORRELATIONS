@@ -32,8 +32,8 @@
         <style type="text/css">
 
              #mynetwork {
-                 width: 100vw;
-                 height: 100vh;
+                 width: 100%;
+                 height: 1000px;
                  background-color: #222222;
                  border: 1px solid lightgray;
                  position: relative;
@@ -215,8 +215,16 @@
 
                   return network;
 
+                  		// ADD THIS TO FORCE REDRAW AFTER CONTAINER DIMENSIONS ARE FINALIZED
+                        setTimeout(function() {
+    						if (typeof network !== 'undefined') {
+    							network.fit();
+    						}
+    					}, 500); // 500ms delay to ensure the container is fully rendered
+
               }
               drawGraph();
         </script>
     </body>
+
 </html>
