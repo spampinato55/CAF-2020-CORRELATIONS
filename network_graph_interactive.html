@@ -349,7 +349,30 @@
 
                  network = new vis.Network(container, data, options);
 
+				 
+				/ ⭐ AGGIUNTA CHIAVE: COLLEGARE I BOTTONI SUBITO DOPO AVER CREATO L'OGGETTO NETWORK
+				const searchBtn = document.getElementById('searchButton');
+				const resetBtn = document.getElementById('resetButton');
+				const nodeInput = document.getElementById('nodeInput');
 
+				// Collega i gestori di eventi
+				if (searchBtn) {
+					searchBtn.addEventListener('click', searchConnections);
+				}
+				if (resetBtn) {
+					resetBtn.addEventListener('click', resetGraph);
+				}
+
+				// Permette di eseguire la ricerca premendo Invio nel campo di input
+				if (nodeInput) {
+					nodeInput.addEventListener('keypress', function(e) {
+						if (e.key === 'Enter') {
+							searchConnections();
+						}
+					});
+				}
+				// FINE AGGIUNTA CHIAVE
+ 
                  
                  // Gestione della barra di caricamento (stabilizzazione della fisica)
                  network.on("stabilizationProgress", function(params) {
@@ -410,3 +433,4 @@
         </script>
     </body>
 </html>
+
