@@ -443,27 +443,6 @@ the context of activities related to...
 Do
 
   ----------------------------------------------------------------------
-  INTERACTIVE SEMANTIC CORRELATION CHART
-  ----------------------------------------------------------------------
-
-  ----------------------------------------------------------------------
-
-At my GitHub repository you can view an interactive semantic correlation
-chart
-
-<https://spampinato55.github.io/CAF-2020-CORRELATIONS/network_graph_interactive.html>
-
-![](./media/media/image4.png){width="7.268055555555556in"
-height="7.347916666666666in"}
-
-The search bar commands are self-explanatory; you can zoom (mouse wheel)
-and pan (drag with mouse) the chart. Hovering the cursor upon a node
-shows a label as the following
-
-![](./media/media/image5.png){width="7.268055555555556in"
-height="0.23541666666666666in"}
-
-  ----------------------------------------------------------------------
   CONCLUSIONS
   ----------------------------------------------------------------------
 
