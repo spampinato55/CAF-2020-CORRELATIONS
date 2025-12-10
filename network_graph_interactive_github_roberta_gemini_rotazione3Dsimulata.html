@@ -107,8 +107,8 @@
     // Variabili per la Rotazione Simulativa
     let isRotating = false;
     let rotationAngle = 0;
-    const ROTATION_SPEED = 0.005; 
-    const ROTATION_RADIUS = 0; 
+    const ROTATION_SPEED = 0.01; 
+    const ROTATION_RADIUS = 50; 
     let animationFrameId = null;
 
                   // parsing and collecting nodes and edges from the python
@@ -127,19 +127,22 @@
 
         rotationAngle += ROTATION_SPEED;
         
-        const newX = ROTATION_RADIUS * Math.cos(rotationAngle);
-        const newY = ROTATION_RADIUS * Math.sin(rotationAngle);
-        
-        // **CORREZIONE CHIAVE**: Recupera lo stato attuale della telecamera per evitare il blocco
-        const currentView = network.getViewOptions();
+        // Calcola la posizione del centro di rotazione (pivot)
+        const centerCoords = network.getCenterCoordinates();
 
+        // Calcola la nuova posizione della telecamera che orbita attorno al centro
+        // Nota: Qui usiamo l'angolo e il raggio fisso (ORBIT_RADIUS)
+        const newX = centerCoords.x + ORBIT_RADIUS * Math.cos(rotationAngle);
+        const newY = centerCoords.y + ORBIT_RADIUS * Math.sin(rotationAngle);
+        
+        // **CORREZIONE CHIAVE**: Muoviamo il centro della vista sul punto calcolato
         network.moveTo({
             position: { 
                 x: newX, 
                 y: newY 
             }, 
-            scale: currentView.scale,    // Mantiene lo zoom
-            offset: currentView.offset,  // Mantiene l'offset
+            // Rimuoviamo getViewOptions e l'uso di scale/offset espliciti, 
+            // lasciando a moveTo il compito di gestire il resto con l'animazione breve
             animation: {
                 duration: 50,
                 easingFunction: "linear"
@@ -151,10 +154,14 @@
     }
 
     function startRotation() {
-        if (isRotating || !network) return; // Controllo aggiuntivo su network
+        if (isRotating || !network) return;
         isRotating = true;
         
+        // Disabilita la fisica
         network.setOptions({ physics: { enabled: false } }); 
+        
+        // Imposta l'angolo iniziale (opzionale, ma pulisce)
+        rotationAngle = 0;
         
         rotateGraph();
     }
@@ -166,10 +173,11 @@
             cancelAnimationFrame(animationFrameId);
             animationFrameId = null;
         }
+        // Riattiva la fisica
         network.setOptions({ physics: { enabled: true } }); 
     }
 
-    // --- FUNZIONI DI INTERAZIONE UTENTE (RICERCA/RESET) ---
+    // --- FUNZIONI DI INTERAZIONE UTENTE (RICERCA/RESET) (Omesse per brevità) ---
 
     function searchConnections() {
         if (!network) return;
@@ -343,5 +351,3 @@
     });
 
 </script>
-</body>
-</html>
