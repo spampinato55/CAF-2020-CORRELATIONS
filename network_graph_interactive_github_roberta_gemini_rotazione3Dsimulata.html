@@ -119,32 +119,42 @@
 
 // --- FUNZIONI DI ROTAZIONE SIMULATIVA CORRETTE E ROBUSTE ---
 
-    function rotateGraph() {
+        function rotateGraph() {
         if (!network || !isRotating) {
             animationFrameId = null;
             return;
         }
 
-        rotationAngle += ROTATION_SPEED;
-        
-        // Calcola la posizione del centro di rotazione (pivot)
-        const centerCoords = network.getCenterCoordinates();
+        // 1. Aumenta l'angolo (che determina la direzione del movimento)
+        angle += ROTATION_INCREMENT; 
+        if (angle >= 360) {
+            angle = 0; 
+        }
 
-        // Calcola la nuova posizione della telecamera che orbita attorno al centro
-        // Nota: Qui usiamo l'angolo e il raggio fisso (ORBIT_RADIUS)
-        const newX = centerCoords.x + ORBIT_RADIUS * Math.cos(rotationAngle);
-        const newY = centerCoords.y + ORBIT_RADIUS * Math.sin(rotationAngle);
+        // Converte l'angolo in radianti per le funzioni trigonometriche
+        const rad = angle * (Math.PI / 180);
+
+        // 2. Calcola il piccolo spostamento (delta) su X e Y
+        // Usiamo un piccolo valore fisso (e.g., 0.1) per traslare la vista
+        const deltaX = Math.cos(rad) * 0.1; 
+        const deltaY = Math.sin(rad) * 0.1; 
         
-        // **CORREZIONE CHIAVE**: Muoviamo il centro della vista sul punto calcolato
+        // 3. Ottieni le coordinate centrali attuali della vista
+        const currentCenter = network.getCenterCoordinates();
+
+        // 4. Calcola la nuova posizione centrale della vista
+        const newX = currentCenter.x + deltaX;
+        const newY = currentCenter.y + deltaY;
+        
+        // **NUOVA LOGICA DI MOVIMENTO PER EVITARE IL BLOCCO**
         network.moveTo({
             position: { 
                 x: newX, 
                 y: newY 
             }, 
-            // Rimuoviamo getViewOptions e l'uso di scale/offset espliciti, 
-            // lasciando a moveTo il compito di gestire il resto con l'animazione breve
+            // Animazione molto breve
             animation: {
-                duration: 50,
+                duration: 1, // Ridotto a 1ms per un movimento istantaneo
                 easingFunction: "linear"
             }
         });
@@ -351,4 +361,5 @@
     });
 
 </script>
+
 
