@@ -105,7 +105,8 @@
     var nodes, edges, network;
     
     // Variabili per la Rotazione Simulativa
-    let isRotating = false;
+    let angle = 0;
+	let isRotating = false;
     let rotationAngle = 0;
     const ROTATION_SPEED = 0.01; 
     const ROTATION_RADIUS = 50; 
@@ -119,73 +120,59 @@
 
 // --- FUNZIONI DI ROTAZIONE SIMULATIVA CORRETTE E ROBUSTE ---
 
-        function rotateGraph() {
-        if (!network || !isRotating) {
-            animationFrameId = null;
-            return;
-        }
 
-        // 1. Aumenta l'angolo (che determina la direzione del movimento)
-        angle += ROTATION_INCREMENT; 
-        if (angle >= 360) {
-            angle = 0; 
-        }
-
-        // Converte l'angolo in radianti per le funzioni trigonometriche
-        const rad = angle * (Math.PI / 180);
-
-        // 2. Calcola il piccolo spostamento (delta) su X e Y
-        // Usiamo un piccolo valore fisso (e.g., 0.1) per traslare la vista
-        const deltaX = Math.cos(rad) * 0.1; 
-        const deltaY = Math.sin(rad) * 0.1; 
-        
-        // 3. Ottieni le coordinate centrali attuali della vista
-        const currentCenter = network.getCenterCoordinates();
-
-        // 4. Calcola la nuova posizione centrale della vista
-        const newX = currentCenter.x + deltaX;
-        const newY = currentCenter.y + deltaY;
-        
-        // **NUOVA LOGICA DI MOVIMENTO PER EVITARE IL BLOCCO**
-        network.moveTo({
-            position: { 
-                x: newX, 
-                y: newY 
-            }, 
-            // Animazione molto breve
-            animation: {
-                duration: 1, // Ridotto a 1ms per un movimento istantaneo
-                easingFunction: "linear"
-            }
-        });
-
-        // Richiama il frame successivo
-        animationFrameId = requestAnimationFrame(rotateGraph);
+function rotateGraph() {
+    if (!network || !isRotating) {
+        animationFrameId = null;
+        return;
     }
 
-    function startRotation() {
-        if (isRotating || !network) return;
-        isRotating = true;
-        
-        // Disabilita la fisica
-        network.setOptions({ physics: { enabled: false } }); 
-        
-        // Imposta l'angolo iniziale (opzionale, ma pulisce)
-        rotationAngle = 0;
-        
-        rotateGraph();
-    }
+    // 1. Aumenta l'angolo
+    angle += ROTATION_INCREMENT; 
+    if (angle >= 360) angle = 0;
 
-    function stopRotation() {
-        isRotating = false;
-        
-        if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-            animationFrameId = null;
+    const rad = angle * (Math.PI / 180);
+
+    // 2. Calcola delta
+    const deltaX = Math.cos(rad) * 2; 
+    const deltaY = Math.sin(rad) * 2; 
+
+    // 3. Ottieni posizione corrente
+    const currentCenter = network.getViewPosition();
+
+    // 4. Nuova posizione
+    const newX = currentCenter.x + deltaX;
+    const newY = currentCenter.y + deltaY;
+
+    network.moveTo({
+        position: { x: newX, y: newY },
+        animation: {
+            duration: 50,
+            easingFunction: "linear"
         }
-        // Riattiva la fisica
-        network.setOptions({ physics: { enabled: true } }); 
+    });
+
+    animationFrameId = requestAnimationFrame(rotateGraph);
+}
+
+function startRotation() {
+    if (isRotating || !network) return;
+    isRotating = true;
+
+    network.setOptions({ physics: { enabled: false } }); 
+    angle = 0; // usa sempre la stessa variabile
+
+    rotateGraph();
+}
+
+function stopRotation() {
+    isRotating = false;
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
     }
+    network.setOptions({ physics: { enabled: true } }); 
+}
 
     // --- FUNZIONI DI INTERAZIONE UTENTE (RICERCA/RESET) (Omesse per brevità) ---
 
@@ -361,6 +348,3 @@
     });
 
 </script>
-
-
-
